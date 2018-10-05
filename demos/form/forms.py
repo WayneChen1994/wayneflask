@@ -12,3 +12,7 @@ class LoginForm(Form):
     password = PasswordField('Password', validators=[DataRequired(), Length(8, 128)])
     remember = BooleanField('Remember me')
     submit = SubmitField('Log in')
+
+
+class testChange(object):
+    pass
