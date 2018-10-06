@@ -1,12 +1,14 @@
 {% extends 'base.html' %}
+{% from 'macros.html' import form_field %}
+
 
 {% block content %}
 <h2>Basic Form</h2>
 
 <form method="post">
-    {{ form.csrf_token }}<!--  渲染CSRF令牌隐藏字段 -->
-    {{ form.username.label }}{{ form.username }}<br>
-    {{ form.password.label }}{{ form.password}}<br>
+    {{ form.csrf_token }}
+    {{ form_field(form.username) }}<br>
+    {{ form_field(form.password) }}<br>
     {{ form.remember }}{{ form.remember.label }}<br>
     {{ form.submit }}<br>
 </form>
