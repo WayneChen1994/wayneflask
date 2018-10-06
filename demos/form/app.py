@@ -5,7 +5,7 @@
 
 import os
 from flask import Flask, render_template, url_for
-from forms import LoginForm
+from demos.form.forms import LoginForm
 
 
 app = Flask(__name__)
