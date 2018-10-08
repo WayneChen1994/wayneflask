@@ -4,6 +4,7 @@
 
 
 import os
+import click
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
@@ -21,3 +22,12 @@ db = SQLAlchemy(app)
 class Note(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.Text)
+
+    def __repr__(self):
+        return '<Note %r>' % self.body
+
+
+@app.cli.command()
+def initdb():
+    db.create_all()
+    click.echo('Initialized database.')
