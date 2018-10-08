@@ -45,7 +45,7 @@ def index():
 def html():
     form = LoginForm()
     if form.validate_on_submit():
-        username = form.username.data
+        username = request.form.get('username')
         flash('Welcome home, %s!' % username)
         return redirect(url_for('index'))
     return render_template('pure_html.html', form=form)
