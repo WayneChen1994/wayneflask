@@ -5,7 +5,7 @@
 
 import os
 import click
-from flask import Flask, flash, redirect, url_for, render_template
+from flask import Flask, flash, redirect, url_for, render_template, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms import TextAreaField, SubmitField
@@ -44,10 +44,35 @@ class Note(db.Model):
         return '<Note %r>' % self.body
 
 
+class Author(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(70), unique=True)
+    phone = db.Column(db.String(20))
+    articles = db.relationship('Article')
+
+    def __repr__(self):
+        return '<Author %r>' % self.name
+
+
+class Article(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(50), index=True)
+    body = db.Column(db.Text)
+    author_id = db.Column(db.Integer, db.ForeignKey('author.id'))
+
+    def __repr__(self):
+        return '<Article %r>' % self.title
+
+
 @app.cli.command()
 def initdb():
     db.create_all()
     click.echo('Initialized database.')
+
+
+@app.shell_context_processor
+def make_shell_context():
+    return dict(db=db, Note=Note, Author=Author, Article=Article)
 
 
 @app.route('/')
@@ -81,3 +106,16 @@ def edit_note(note_id):
         return redirect(url_for('index'))
     form.body.data = note.body
     return render_template('edit_note.html', form=form)
+
+
+@app.route('/delete/<int:note_id>', methods=['POST'])
+def delete_note(note_id):
+    form = DeleteNoteForm()
+    if form.validate_on_submit():
+        note = Note.query.get(note_id)
+        db.session.delete(note)
+        db.session.commit()
+        flash('Your note is deleted.')
+    else:
+        abort(400)
+    return redirect(url_for('index'))
